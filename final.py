@@ -14,7 +14,7 @@ async def getWorldNews():
 
     articles=[]
     r=""
-    for i in range(1):
+    for i in range(3):
         url = raw_urls[i]["link"]
         # url = raw_urls[i]
         print("# Creating Article :",url)

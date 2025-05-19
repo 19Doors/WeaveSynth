@@ -3,6 +3,7 @@ from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from bs4 import BeautifulSoup, NavigableString, Comment
+from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 from langchain_openai import AzureChatOpenAI, ChatOpenAI
 import os
@@ -113,11 +114,15 @@ def page_extract(url):
 
 def scrape(url, thumbnail_url):
 
-    llm = ChatOpenAI(
-        model_name="google/gemma-3-27b-it:free",  # Replace with your desired OpenRouter model
-        openai_api_key=openrouter_api_key,
-        openai_api_base=openrouter_base_url,
+    llm = ChatGoogleGenerativeAI(
+        model="gemini-2.0-flash",
+        temperature=0,
+        max_tokens=None,
+        timeout=None,
+        max_retries=2,
+        # other params...
     )
+
     merged_chunks_result=""
     def process_chunk(i,chunk):
           prompt = f"""
