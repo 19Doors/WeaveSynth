@@ -15,6 +15,17 @@ CREATE TABLE `account` (
 	FOREIGN KEY (`user_id`) REFERENCES `user`(`id`) ON UPDATE no action ON DELETE cascade
 );
 --> statement-breakpoint
+CREATE TABLE `articles` (
+	`url` text PRIMARY KEY NOT NULL,
+	`title` text,
+	`summary` text,
+	`content` text,
+	`thumbnail_url` text,
+	`source` text,
+	`keywords` text,
+	`category` text
+);
+--> statement-breakpoint
 CREATE TABLE `session` (
 	`id` text PRIMARY KEY NOT NULL,
 	`expires_at` integer NOT NULL,

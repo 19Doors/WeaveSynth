@@ -45,3 +45,15 @@ export const verification = sqliteTable("verification", {
  createdAt: integer('created_at', { mode: 'timestamp' }).$defaultFn(() => /* @__PURE__ */ new Date()),
  updatedAt: integer('updated_at', { mode: 'timestamp' }).$defaultFn(() => /* @__PURE__ */ new Date())
 				});
+
+export const articles = sqliteTable("articles", {
+  url: text('url').primaryKey(),
+  title: text('title'),
+  summary: text('summary'),
+  content: text('content'),
+  thumbnail_url: text('thumbnail_url'),
+  source: text('source'),
+  keywords: text('keywords'),
+  category: text('category')
+})
+

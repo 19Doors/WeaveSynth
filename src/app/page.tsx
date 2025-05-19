@@ -55,6 +55,7 @@ export default function Home() {
   async function handleRefresh() {
     setlfArticles((e) => true);
     const articleResults = await getWorldNews();
+    console.log(articleResults)
     setArticles((a) => articleResults);
     setlfArticles((e) => false);
   }
@@ -82,7 +83,7 @@ export default function Home() {
     <div className="relative p-4 px-8 flex flex-col space-y-8 h-screen">
       <div
         ref={SideMenuRef}
-        className="p-8 absolute top-0 -left-100 w-full h-screen bg-primary translate flex flex-col"
+        className="p-8 absolute top-0 -left-100 w-full h-screen bg-primary translate flex flex-col h-full"
       >
         <div className="flex w-full justify-end">
           <X
