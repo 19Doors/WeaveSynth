@@ -4,6 +4,9 @@ import { AlignLeft, RefreshCw, X } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { gsap } from "gsap";
 import { useGSAP } from "@gsap/react";
+import { authClient } from "@/lib/auth-client";
+import { useRouter } from "next/navigation";
+import { signOut } from "better-auth/api";
 
 function ArticleCard({ article }) {
   const cardRef = useRef(null);
