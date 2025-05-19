@@ -8,13 +8,13 @@ app = FastAPI()
 
 @app.get("/getArticles")
 async def getWorldNews():
-    raw_urls=get_urls("Global News Articles")
+    raw_urls=get_urls("World News Articles")
     # raw_urls=["https://www.bbc.com/news/articles/c2e373yzndro",
     #           "https://www.bbc.com/news/articles/cgmj7l0lne3o"]
 
     articles=[]
     r=""
-    for i in range(2):
+    for i in range(1):
         url = raw_urls[i]["link"]
         # url = raw_urls[i]
         print("# Creating Article :",url)

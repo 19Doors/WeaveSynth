@@ -1,5 +1,8 @@
 import os
 from serpapi import search
+from dotenv import load_dotenv
+
+load_dotenv()
 
 serp_key = os.getenv("SERPAPI_KEY")
 def get_urls(query):
