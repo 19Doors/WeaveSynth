@@ -7,7 +7,7 @@ from dotenv import load_dotenv
 import libsql_experimental as libsql
 load_dotenv()
 
-raw_urls=get_urls("World News Articles")
+raw_urls=get_urls("Sports News Articles")
 number_of_urls=3
 
 url = os.getenv("DATABASE_URL")
@@ -32,7 +32,11 @@ for i in range(1000):
 
     number_of_urls-=1
     print("# Creating Article :",url)
-    scraped_data=scrape(url,raw_urls[i]["thumbnail"])
+    try:
+        thumbnail_url=raw_urls[i]["thumbnail"]
+    except:
+        thumbnail_url="USE any image url given from content"
+    scraped_data=scrape(url,thumbnail_url)
     r=r+scraped_data+"\n"
 
 print("="*30)
