@@ -4,7 +4,7 @@ from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 from bs4 import BeautifulSoup, NavigableString, Comment
 from langchain.text_splitter import RecursiveCharacterTextSplitter
-from langchain_openai import AzureChatOpenAI
+from langchain_openai import AzureChatOpenAI, ChatOpenAI
 import os
 from dotenv import load_dotenv
 import tiktoken
@@ -18,6 +18,9 @@ def token_length(text):
     return len(enc.encode(text))
 
 load_dotenv()
+
+openrouter_api_key = os.getenv("OPENROUTER_API_KEY")
+openrouter_base_url = os.getenv("OPENROUTER_BASE_URL")
 
 def create_undetectable_chrome_driver():
     options = webdriver.ChromeOptions()
@@ -109,14 +112,12 @@ def page_extract(url):
     return chunks
 
 def scrape(url, thumbnail_url):
-    llm = AzureChatOpenAI(
-            azure_endpoint=os.getenv("azure_endpoint"),
-            api_key=os.getenv("AZURE_OPENAI_API_KEY"),
-            azure_deployment="GPT4O",
-            api_version=os.getenv("AZURE_OPENAI_API_VERSION"),
-            temperature=0,
-            max_retries=2
-            )
+
+    llm = ChatOpenAI(
+        model_name="google/gemma-3-27b-it:free",  # Replace with your desired OpenRouter model
+        openai_api_key=openrouter_api_key,
+        openai_api_base=openrouter_base_url,
+    )
     merged_chunks_result=""
     def process_chunk(i,chunk):
           prompt = f"""
