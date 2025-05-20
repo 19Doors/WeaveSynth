@@ -1,5 +1,6 @@
 import json
 from getURLs import get_urls
+from hashing import url_to_sha256_id
 from per import perplexity_results
 from one import scrape
 import os
@@ -7,7 +8,7 @@ from dotenv import load_dotenv
 import libsql_experimental as libsql
 load_dotenv()
 
-raw_urls=get_urls("Sports News Articles")
+raw_urls=get_urls("Latest Sports Articles")
 number_of_urls=3
 
 url = os.getenv("DATABASE_URL")
@@ -36,7 +37,11 @@ for i in range(1000):
         thumbnail_url=raw_urls[i]["thumbnail"]
     except:
         thumbnail_url="USE any image url given from content"
-    scraped_data=scrape(url,thumbnail_url)
+
+    try:
+        scraped_data=scrape(url,thumbnail_url)
+    except:
+        continue
     r=r+scraped_data+"\n"
 
 print("="*30)
@@ -55,8 +60,9 @@ print(articles)
 
 for article in articles:
     keywords=",".join(article['keywords'])
-    cmd="""insert into articles (url, title, summary, content, thumbnail_url, source, keywords, category) values (?, ?, ?, ?, ?, ?, ?, ?)"""
+    cmd="""insert into articles (id, url, title, summary, content, thumbnail_url, source, keywords, category) values (?, ?, ?, ?, ?, ?, ?, ?, ?)"""
     values_to_insert = (
+        url_to_sha256_id(article['url']),
         article['url'],
         article['title'],
         article['summary'],
