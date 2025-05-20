@@ -10,14 +10,15 @@ export default function loading() {
   const loadingText = useRef(null);
   useGSAP(() => {
     gsap.to(loadingText.current, {
-      duration: 2.0, scrambleText: {
-	text: "LOADING",
-	chars: "XO123",
-	speed: 0.3,
+      duration: 2.0,
+      scrambleText: {
+        text: "LOADING",
+        chars: "XO123",
+        speed: 0.3,
       },
-      ease: "sine.out"
-    })
-  })
+      ease: "sine.out",
+    });
+  });
   return (
     <div className="w-full h-screen flex items-center justify-center">
       <p ref={loadingText} className="font-bold font-spaceG text-4xl"></p>

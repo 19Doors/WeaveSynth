@@ -6,11 +6,12 @@ import { gsap } from "gsap";
 import { useGSAP } from "@gsap/react";
 import { authClient } from "@/lib/auth-client";
 import { useRouter } from "next/navigation";
-import { signOut } from "better-auth/api";
+import { getSession, signOut } from "better-auth/api";
 
 function ArticleCard({ article }) {
   const cardRef = useRef(null);
   const titleRef = useRef(null);
+  const router = useRouter();
 
   function handleMouseEnter() {
     if (titleRef.current) {
@@ -31,12 +32,17 @@ function ArticleCard({ article }) {
       className="flex flex-col space-y-3 cursor-pointer overflow-hidden"
       onMouseEnter={handleMouseEnter}
       onMouseLeave={handleMouseLeave}
+      onClick={() => {
+        router.push("/articles/" + article.id);
+      }}
     >
-      <img
-        className="w-full h-48 object-cover rounded"
-        src={article.thumbnail_url}
-        alt={article.title}
-      />
+      {article.thumbnail_url != "" && (
+        <img
+          className="w-full h-48 object-cover rounded"
+          src={article.thumbnail_url}
+          alt={article.title}
+        />
+      )}
       <a
         className="font-inter font-bold text-base/5 text-primary line-clamp-3"
         ref={titleRef}
@@ -49,16 +55,26 @@ function ArticleCard({ article }) {
 }
 
 export default function Home() {
+  const { data: session, error } = authClient.useSession();
+  console.log(session);
   const SideMenuRef = useRef(null);
+  const router = useRouter();
   const [articles, setArticles] = useState([]);
   const [lfArticles, setlfArticles] = useState(false);
   async function handleRefresh() {
     setlfArticles((e) => true);
     const articleResults = await getWorldNews();
-    console.log(articleResults)
+    articleResults.reverse();
+    console.log(articleResults);
     setArticles((a) => articleResults);
     setlfArticles((e) => false);
   }
+  async function initialFetchArticles() {
+    await handleRefresh();
+  }
+  useEffect(() => {
+    initialFetchArticles();
+  }, []);
   function handleSideMenuOpen() {
     gsap.to(SideMenuRef.current, {
       left: 0,
@@ -73,6 +89,15 @@ export default function Home() {
       ease: "power2.in",
     });
   }
+  async function signOut() {
+    await authClient.signOut({
+      fetchOptions: {
+        onSuccess: () => {
+          router.push("/authentication");
+        },
+      },
+    });
+  }
   const sidemenulinks = [
     ["Global", "/"],
     ["National", "/"],
@@ -83,7 +108,7 @@ export default function Home() {
     <div className="relative p-4 px-8 flex flex-col space-y-8 h-screen">
       <div
         ref={SideMenuRef}
-        className="p-8 absolute top-0 -left-100 w-full h-screen bg-primary translate flex flex-col h-full"
+        className="p-8 absolute top-0 -left-[100%] w-full h-screen bg-primary translate flex flex-col h-full"
       >
         <div className="flex w-full justify-end">
           <X
@@ -103,6 +128,12 @@ export default function Home() {
               {e[0]}
             </a>
           ))}
+          <a
+            className="font-instrument text-4xl text-white cursor-pointer"
+            onClick={signOut}
+          >
+            Logout
+          </a>
         </div>
       </div>
       <div className="flex w-full justify-between items-center">

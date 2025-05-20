@@ -1,7 +1,7 @@
 {
   "version": "6",
   "dialect": "sqlite",
-  "id": "ba58390c-8580-4595-ad97-896585f0bb52",
+  "id": "788bb4c1-b654-45ec-b00e-c6ace8052697",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "tables": {
     "account": {
@@ -122,11 +122,18 @@
     "articles": {
       "name": "articles",
       "columns": {
-        "url": {
-          "name": "url",
+        "id": {
+          "name": "id",
           "type": "text",
           "primaryKey": true,
           "notNull": true,
+          "autoincrement": false
+        },
+        "url": {
+          "name": "url",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false,
           "autoincrement": false
         },
         "title": {

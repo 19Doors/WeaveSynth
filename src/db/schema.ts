@@ -47,7 +47,8 @@ export const verification = sqliteTable("verification", {
 				});
 
 export const articles = sqliteTable("articles", {
-  url: text('url').primaryKey(),
+  id: text('id').primaryKey(),
+  url: text('url'),
   title: text('title'),
   summary: text('summary'),
   content: text('content'),
