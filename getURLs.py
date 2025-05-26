@@ -6,6 +6,9 @@ from dotenv import load_dotenv
 
 serp_key = os.getenv("SERPAPI_KEY")
 def get_urls(query):
+
+    if not serp_key:
+        raise ValueError("SERPAPI_KEY environment variable is not set")
     params = {
       "engine": "google_news",
       "q": query,
