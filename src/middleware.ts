@@ -13,7 +13,8 @@ export async function middleware(request: NextRequest) {
       })
       if(!session) {
 	console.log("[WARN] Not Allowed to "+p)
-	return NextResponse.redirect("http://localhost:3000/authentication")
+	const authUrl = new URL('/authentication', request.nextUrl.origin)
+        return NextResponse.redirect(authUrl)
       }
     }
   }
