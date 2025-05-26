@@ -6,7 +6,7 @@ from one import scrape
 import os
 from dotenv import load_dotenv
 import libsql_experimental as libsql
-load_dotenv()
+# load_dotenv()
 
 query = "World News"
 raw_urls=get_urls(query)

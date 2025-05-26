@@ -21,7 +21,7 @@ class ExpandedArticle(BaseModel):
 class ArticleListResponse(BaseModel):
     articles: List[ExpandedArticle]
 
-load_dotenv()
+# load_dotenv()
 perplexity_api=os.getenv("PERPLEXITY_API")
 model="sonar-pro"
 search_context_size="medium"

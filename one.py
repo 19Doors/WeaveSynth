@@ -18,10 +18,10 @@ def token_length(text):
     """Calculate number of tokens in a text using GPT-4 tokenizer."""
     return len(enc.encode(text))
 
-load_dotenv()
+# load_dotenv()
 
-openrouter_api_key = os.getenv("OPENROUTER_API_KEY")
-openrouter_base_url = os.getenv("OPENROUTER_BASE_URL")
+# openrouter_api_key = os.getenv("OPENROUTER_API_KEY")
+# openrouter_base_url = os.getenv("OPENROUTER_BASE_URL")
 
 def create_undetectable_chrome_driver():
     options = webdriver.ChromeOptions()
