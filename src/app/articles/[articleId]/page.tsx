@@ -14,7 +14,7 @@ export default async function ArticlePage({
   return (
     <div className="p-4 flex flex-col space-y-4">
       <NavbarNo />
-      <div className="font-inter flex flex-col space-y-4">
+      <div className="font-inter flex flex-col space-y-4 sm:mx-20 md:mx-[25%]">
         <Markdown
           components={{
             p(props) {

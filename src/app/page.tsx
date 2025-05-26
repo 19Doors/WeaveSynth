@@ -6,89 +6,74 @@ import { gsap } from "gsap";
 import { useGSAP } from "@gsap/react";
 import { authClient } from "@/lib/auth-client";
 import { useRouter } from "next/navigation";
-import { getSession, signOut } from "better-auth/api";
 
 function ArticleCard({ article }) {
   const cardRef = useRef(null);
   const titleRef = useRef(null);
   const router = useRouter();
 
-  function handleMouseEnter() {
-    if (titleRef.current) {
-      gsap.to(titleRef.current, {
-        duration: 0.3,
-      });
-    }
-  }
-
-  function handleMouseLeave() {
-    if (titleRef.current) {
-    }
-  }
-
   return (
     <div
       ref={cardRef}
-      className="flex flex-col space-y-3 cursor-pointer overflow-hidden"
-      onMouseEnter={handleMouseEnter}
-      onMouseLeave={handleMouseLeave}
-      onClick={() => {
-        router.push("/articles/" + article.id);
-      }}
+      className="flex flex-col space-y-3 cursor-pointer overflow-hidden bg-white rounded-md p-2"
+      onClick={() => router.push("/articles/" + article.id)}
     >
-      {article.thumbnail_url != "" && (
-        <img
-          className="w-full h-48 object-cover rounded"
-          src={article.thumbnail_url}
-          alt={article.title}
-        />
+      {article.thumbnail_url && (
+        <div className="w-full aspect-[16/9] bg-gray-100 rounded overflow-hidden">
+          <img
+            className="w-full h-full object-cover hover:contrast-105 hover:brightness-75"
+            src={article.thumbnail_url}
+            alt={article.title}
+          />
+        </div>
       )}
       <a
-        className="font-inter font-bold text-base/5 text-primary line-clamp-3"
+        className="font-inter font-bold text-base/5 md:text-lg/6 text-primary line-clamp-3 hover:underline"
         ref={titleRef}
       >
         {article.title}
       </a>
-      <p className="font-inter text-xs/4 line-clamp-2">{article.summary}</p>
+      <p className="font-inter text-sm/4 line-clamp-2 sm:line-clamp-3 hidden">
+        {article.summary}
+      </p>
     </div>
   );
 }
-
 export default function Home() {
   const { data: session, error } = authClient.useSession();
-  console.log(session);
   const SideMenuRef = useRef(null);
   const router = useRouter();
   const [articles, setArticles] = useState([]);
   const [lfArticles, setlfArticles] = useState(false);
+
   async function handleRefresh() {
-    setlfArticles((e) => true);
+    setlfArticles(true);
     const articleResults = await getWorldNews();
     articleResults.reverse();
-    console.log(articleResults);
-    setArticles((a) => articleResults);
-    setlfArticles((e) => false);
+    setArticles(articleResults);
+    setlfArticles(false);
   }
-  async function initialFetchArticles() {
-    await handleRefresh();
-  }
+
   useEffect(() => {
-    initialFetchArticles();
+    handleRefresh();
   }, []);
+
   function handleSideMenuOpen() {
     gsap.to(SideMenuRef.current, {
-      left: 0,
+      x: "0%",
       duration: 0.5,
       ease: "power2.out",
     });
   }
+
   function handleSideMenuClose() {
     gsap.to(SideMenuRef.current, {
-      left: -1000,
+      x: "-100%",
       duration: 0.5,
       ease: "power2.in",
     });
   }
+
   async function signOut() {
     await authClient.signOut({
       fetchOptions: {
@@ -98,79 +83,108 @@ export default function Home() {
       },
     });
   }
+
   const sidemenulinks = [
     ["Global", "/"],
     ["National", "/"],
-    ["Nature", "/nature"],
-    ["Sports", "/sports"],
+    ["Nature", "/"],
+    ["Sports", "/"],
   ];
+
   return (
-    <div className="relative p-4 px-8 flex flex-col space-y-8 h-screen">
+    <div className="min-h-screen bg-white">
+      {/* Desktop Navbar */}
+      <div className="hidden lg:flex justify-between items-center px-8 py-4 bg-white text-black">
+        <p className="font-instrument text-2xl">WeaveSynth</p>
+        <div className="flex space-x-8 items-center">
+          {sidemenulinks.map(([label, path]) => (
+            <a
+              key={label}
+              className="hover:underline cursor-pointer font-instrument text-lg"
+            >
+              {label}
+            </a>
+          ))}
+          <a
+            className="font-instrument text-1.5xl px-2 py-1 bg-primary text-white rounded-lg cursor-pointer hover:scale-110 duration-200"
+            onClick={signOut}
+          >
+            Logout
+          </a>
+          <RefreshCw
+            onClick={handleRefresh}
+            size={20}
+            color="black"
+            className="cursor-pointer"
+          />
+        </div>
+      </div>
+
+      {/* Mobile/Tablet Header */}
+      <div className="lg:hidden flex justify-between items-center px-6 py-4 bg-white">
+        <AlignLeft
+          onClick={handleSideMenuOpen}
+          size={24}
+          className="cursor-pointer"
+        />
+        <p className="font-instrument text-xl">WeaveSynth</p>
+        <RefreshCw
+          onClick={handleRefresh}
+          size={20}
+          className="cursor-pointer"
+        />
+      </div>
+
+      {/* Sidebar for Mobile/Tablet */}
       <div
         ref={SideMenuRef}
-        className="p-8 absolute top-0 -left-[100%] w-full h-screen bg-primary translate flex flex-col h-full z-50"
+        className="fixed top-0 left-0 -translate-x-full w-full h-screen bg-primary z-50 flex flex-col p-8 sm:max-w-2/3"
       >
         <div className="flex w-full justify-end">
           <X
-            color="#FFFFFF"
             size={28}
-            strokeWidth={2.5}
+            color="white"
             className="cursor-pointer"
             onClick={handleSideMenuClose}
           />
         </div>
         <div className="flex flex-grow flex-col space-y-24 items-center justify-center w-full">
-          {sidemenulinks.map((e) => (
+          {sidemenulinks.map(([label, path]) => (
             <a
-              key={e}
-              className="font-instrument text-4xl text-white cursor-pointer"
-	      href={e[1]}
+              key={label}
+              className="font-instrument text-3xl text-white cursor-pointer hover:underline"
             >
-              {e[0]}
+              {label}
             </a>
           ))}
           <a
-            className="font-instrument text-4xl text-white cursor-pointer"
             onClick={signOut}
+            className="font-instrument text-3xl text-white cursor-pointer hover:underline"
           >
             Logout
           </a>
         </div>
       </div>
-      <div className="flex w-full justify-between items-center sticky top-0 bg-white">
-        <AlignLeft
-          color="#2D2D34"
-          size={18}
-          strokeWidth={2.5}
-          className="cursor-pointer"
-          onClick={handleSideMenuOpen}
-        />
-        <p className="font-instrument text-xl">WeaveSynth</p>
-        <RefreshCw
-          onClick={handleRefresh}
-          size={16}
-          color="#2D2D34"
-          className="cursor-pointer"
-        />
-      </div>
-      <div className="flex flex-grow flex-col space-y-6 ">
-        {lfArticles && (
-          <div className="flex flex-grow items-center justify-center">
-            <p className="font-inter font-bold">
+
+      {/* Articles Section */}
+      <div className="px-6 py-6">
+        {lfArticles ? (
+          <div className="flex justify-center items-center min-h-[60vh]">
+            <p className="font-inter font-bold animate-pulse">
               Fetching New Articles! It will take time.
             </p>
           </div>
-        )}
-        {lfArticles != true && articles.length == 0 && (
-          <div className="flex flex-grow items-center justify-center">
+        ) : articles.length === 0 ? (
+          <div className="flex justify-center items-center min-h-[60vh]">
             <p className="font-inter font-bold">OOPs! No Articles Found</p>
           </div>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {articles.map((article) => (
+              <ArticleCard key={article.title} article={article} />
+            ))}
+          </div>
         )}
-        {lfArticles != true &&
-          articles.length != 0 &&
-          articles.map((article) => (
-            <ArticleCard key={article.title} article={article} />
-          ))}
       </div>
     </div>
   );
