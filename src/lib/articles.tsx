@@ -9,6 +9,16 @@ export async function getWorldNews() {
   return result
 }
 
+export async function getNatureNews() {
+  const result = await db.select().from(articles).where(eq(articles.category,"nature"));
+  return result
+}
+
+export async function getSportsNews() {
+  const result = await db.select().from(articles).where(eq(articles.category,"sports"));
+  return result
+}
+
 export async function fetchArticleById(id) {
   const result = await db.select().from(articles).where(eq(articles.id,id))
   return result

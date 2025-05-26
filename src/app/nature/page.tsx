@@ -1,5 +1,5 @@
 "use client";
-import { getWorldNews } from "@/lib/articles";
+import { getNatureNews, getWorldNews } from "@/lib/articles";
 import { AlignLeft, RefreshCw, X } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { gsap } from "gsap";
@@ -54,7 +54,7 @@ function ArticleCard({ article }) {
   );
 }
 
-export default function Home() {
+export default function Nature() {
   const { data: session, error } = authClient.useSession();
   console.log(session);
   const SideMenuRef = useRef(null);
@@ -63,7 +63,7 @@ export default function Home() {
   const [lfArticles, setlfArticles] = useState(false);
   async function handleRefresh() {
     setlfArticles((e) => true);
-    const articleResults = await getWorldNews();
+    const articleResults = await getNatureNews();
     articleResults.reverse();
     console.log(articleResults);
     setArticles((a) => articleResults);
