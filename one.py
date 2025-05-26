@@ -104,8 +104,8 @@ def page_extract(url):
 
 
     text_splitter = RecursiveCharacterTextSplitter(
-                    chunk_size=120000,  # Characters per chunk (adjust based on typical paragraph/section size and LLM input preference)
-                    chunk_overlap=12000, # Overlap to maintain context
+                    chunk_size=420000,  # Characters per chunk (adjust based on typical paragraph/section size and LLM input preference)
+                    chunk_overlap=42000, # Overlap to maintain context
                     length_function=token_length,
                     )
     chunks=text_splitter.split_text(str(soup))

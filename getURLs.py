@@ -10,7 +10,7 @@ def get_urls(query):
       "engine": "google_news",
       "q": query,
       "hl": "en",
-      "api_key": serp_key
+      "api_key": serp_key,
     }
 
     search_results = search(params)

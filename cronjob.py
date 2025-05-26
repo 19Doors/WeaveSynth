@@ -8,7 +8,8 @@ from dotenv import load_dotenv
 import libsql_experimental as libsql
 load_dotenv()
 
-raw_urls=get_urls("Latest Sports Articles")
+query = "World News"
+raw_urls=get_urls(query)
 number_of_urls=3
 
 url = os.getenv("DATABASE_URL")
