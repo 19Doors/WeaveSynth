@@ -66,7 +66,7 @@ export default function authentication() {
   return (
     <div className="flex flex-col px-8 p-4 h-screen">
       <NavbarNo />
-      <div className="flex flex-grow flex-col justify-center items-left h-screen space-y-4">
+      <div className="flex flex-grow flex-col justify-center items-left h-screen space-y-4 md:mx-[30%]">
         {loading && (
           <div>
             <Loading />
