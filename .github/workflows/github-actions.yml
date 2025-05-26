@@ -1,9 +1,7 @@
 name: Weave Back
 on:
   schedule:
-    - cron: '30 2 * * *'   # 8 AM IST (Morning news)
-    - cron: '30 8 * * *'   # 2 PM IST (Afternoon news)
-    - cron: '30 15 * * *'  # 9 PM IST (Night news)
+    - cron: '*/5 * * * *'   # 8 AM IST (Morning news)
   workflow_dispatch:
 
 jobs:
