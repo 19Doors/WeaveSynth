@@ -8,7 +8,7 @@ from dotenv import load_dotenv
 import libsql_experimental as libsql
 # load_dotenv()
 
-query = "Trending News Articles"
+query = "Latest News"
 raw_urls=get_urls(query)
 number_of_urls=2
 
