@@ -14,7 +14,7 @@ export default async function ArticlePage({
   return (
     <div className="p-4 flex flex-col space-y-4">
       <NavbarNo />
-      <div className="font-inter flex flex-col space-y-4 sm:mx-20 md:mx-[25%]">
+      <div className="font-inter flex flex-col space-y-3 sm:mx-20 md:mx-[25%]">
         <Markdown
           components={{
             p(props) {
@@ -35,8 +35,8 @@ export default async function ArticlePage({
             },
             ul: ({ node, ordered, className, children, ...rest }) => {
               const classes = ordered
-                ? "list-decimal list-inside my-2 text-sm" // For <ol>
-                : "list-disc list-inside my-2 text-sm"; // For <ul>
+                ? "list-decimal list-inside text-sm flex flex-col space-y-1" // For <ol>
+                : "list-disc list-inside text-sm flex flex-col space-y-1"; // For <ul>
               return (
                 <ul className={`${classes} ${className || ""}`} {...rest}>
                   {children}
@@ -45,7 +45,7 @@ export default async function ArticlePage({
             },
             ol: ({ node, ordered, className, children, ...rest }) => {
               // For ordered lists (numbers)
-              const classes = "list-decimal list-inside my-2 text-sm";
+              const classes = "list-decimal list-inside text-sm";
               return (
                 <ol className={`${classes} ${className || ""}`} {...rest}>
                   {children}
@@ -55,7 +55,7 @@ export default async function ArticlePage({
             li: ({ node, ordered, className, children, index, ...rest }) => {
               // You might want to add margin to list items if your ul/ol doesn't handle it
               return (
-                <li className={`mb-1 ${className || ""}`} {...rest}>
+                <li className={`${className || ""}`} {...rest}>
                   {children}
                 </li>
               );
