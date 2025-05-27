@@ -1,238 +1,158 @@
 "use client";
-import { Loading, NavbarNo } from "@/components/ui";
+import { getWorldNews } from "@/lib/articles";
+import { AlignLeft, RefreshCw, X } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
+import { gsap } from "gsap";
+import { useGSAP } from "@gsap/react";
 import { authClient } from "@/lib/auth-client";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
 
-export default function Authentication() {
-  const [name, setName] = useState("");
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [siu, setSiu] = useState(true);
-  const [error, setError] = useState("");
-  const [loading, setLoading] = useState(false);
+function ArticleCard({ article }) {
+  const cardRef = useRef(null);
+  const titleRef = useRef(null);
   const router = useRouter();
 
-  async function signUp() {
-    setLoading(true);
-    const { error } = await authClient.signUp.email(
-      { email, password, name, callbackURL: "/" },
-      {
-        onSuccess: () => {
-          setLoading(false);
-          router.push("/");
-        },
-        onError: (ctx) => {
-          setLoading(false);
-          setError(ctx.error.code);
-        },
-      }
-    );
+  return (
+    <div
+      ref={cardRef}
+      className="flex flex-col space-y-3 cursor-pointer overflow-hidden transition-transform duration-300 hover:scale-105 hover:shadow-xl bg-white rounded-xl p-2"
+      onClick={() => router.push("/articles/" + article.id)}
+    >
+      {article.thumbnail_url && (
+        <div className="w-full aspect-[16/9] bg-gray-100 rounded overflow-hidden">
+          <img
+            className="w-full h-full object-contain"
+            src={article.thumbnail_url}
+            alt={article.title}
+          />
+        </div>
+      )}
+      <a className="font-inter font-bold text-base md:text-lg text-primary line-clamp-3" ref={titleRef}>
+        {article.title}
+      </a>
+      <p className="font-inter text-sm md:text-base line-clamp-2">{article.summary}</p>
+    </div>
+  );
+}
+
+export default function Home() {
+  const { data: session, error } = authClient.useSession();
+  const SideMenuRef = useRef(null);
+  const router = useRouter();
+  const [articles, setArticles] = useState([]);
+  const [lfArticles, setlfArticles] = useState(false);
+
+  async function handleRefresh() {
+    setlfArticles(true);
+    const articleResults = await getWorldNews();
+    articleResults.reverse();
+    setArticles(articleResults);
+    setlfArticles(false);
   }
 
-  async function signIn() {
-    setLoading(true);
-    const { error } = await authClient.signIn.email(
-      { email, password, callbackURL: "/" },
-      {
-        onSuccess: () => {
-          setLoading(false);
-          router.push("/");
-        },
-        onError: (ctx) => {
-          setLoading(false);
-          setError(ctx.error.code);
-        },
-      }
-    );
+  useEffect(() => {
+    handleRefresh();
+  }, []);
+
+  function handleSideMenuOpen() {
+    gsap.to(SideMenuRef.current, {
+      x: 0,
+      duration: 0.5,
+      ease: "power2.out",
+    });
   }
+
+  function handleSideMenuClose() {
+    gsap.to(SideMenuRef.current, {
+      x: "-100%",
+      duration: 0.5,
+      ease: "power2.in",
+    });
+  }
+
+  async function signOut() {
+    await authClient.signOut({
+      fetchOptions: {
+        onSuccess: () => {
+          router.push("/authentication");
+        },
+      },
+    });
+  }
+
+  const sidemenulinks = [
+    ["Global", "/"],
+    ["National", "/"],
+    ["Nature", "/"],
+    ["Sports", "/"],
+  ];
 
   return (
-    <div className="h-screen w-screen flex font-inter auth-container">
-
-      {/* Left Half - Typing Animation */}
-<div className="w-2/3 relative bg-white text-black overflow-hidden left-half">
-
-  <img
-    src="https://st.depositphotos.com/2046901/3389/i/950/depositphotos_33898493-stock-photo-newspaper-border.jpg"
-    alt="news background"
-    className="absolute top-0 left-0 w-full h-full z-0 opacity-80"
-  />
-  <div className="absolute inset-0 bg-white/80 z-10" />
-  <div className="relative z-20 h-full w-full flex flex-col justify-center items-center px-4 py-8 space-y-6">
-    <h1
-  className="text-6xl font-bold z-20"
-  style={{ fontFamily: "'Instrument Serif', 'serif'" }}
+    <div className="min-h-screen bg-white">
+      {/* Desktop Navbar */}
+      <div className="hidden lg:flex justify-between items-center px-8 py-4 bg-white text-black">
+        <p className="font-instrument text-2xl">WeaveSynth</p>
+        <div className="flex space-x-8 items-center">
+          {sidemenulinks.map(([label, path]) => (
+            <a key={label} className="hover:underline cursor-pointer font-instrument text-lg">
+              {label}
+            </a>
+          ))}
+        <a
+  className="font-instrument text-1.5xl px-2 py-1 bg-primary text-white rounded-lg shadow-md cursor-pointer hover:bg-gray-100 transition-all duration-200"
+  onClick={signOut}
 >
-  Welcome to WeaveSynth
-</h1>
-  <h2 className="text-xl sm:text-2xl md:text-3xl font-black text-black text-center max-w-2xl">
-  <span className="hidden md:inline-block typing-animation border-r-4 pr-1 border-black">
-    Weave your personalized news tapestry
-  </span>
-  <span className="inline-block md:hidden">
-    Weave your personalized news tapestry
-  </span>
-</h2>
-
-  </div>
-</div>
-
-
-
-      {/* Right Half - Form */}
-      <div className="w-1/3 bg-black text-white flex flex-col justify-center px-10 right-half">
-
-        {/* <NavbarNo /> */}
-        <div className="max-w-md w-full space-y-6">
-          <h2 className="text-3xl font-bold text-white text-center">
-            {siu ? "Sign In" : "Create an Account"}
-          </h2>
-          {loading && <Loading />}
-          {error && <p className="text-red-500 font-bold text-sm">{error}</p>}
-          {!siu && (
-            <div>
-              <label className="block text-sm font-light">Name</label>
-              <input
-                type="text"
-                className="w-full p-2 rounded bg-white/10 border border-white/30 text-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
-                onChange={(e) => setName(e.target.value)}
-              />
-            </div>
-          )}
-          <div>
-            <label className="block text-sm font-light">Email</label>
-            <input
-              type="email"
-              className="w-full p-2 rounded bg-white/10 border border-white/30 text-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
-              onChange={(e) => setEmail(e.target.value)}
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-light">Password</label>
-            <input
-              type="password"
-              className="w-full p-2 rounded bg-white/10 border border-white/30 text-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
-              onChange={(e) => setPassword(e.target.value)}
-            />
-          </div>
-          <div className="flex justify-between items-center mt-4">
-            <button
-              onClick={siu ? signIn : signUp}
-              className="w-28 h-10 rounded bg-white hover:bg-blue-900 transition text-sm text-black font-bold"
-            >
-              {siu ? "Sign In" : "Sign Up"}
-            </button>
-            <p
-              className="text-sm underline cursor-pointer hover:text-blue-400"
-              onClick={() => setSiu(!siu)}
-            >
-              {siu ? "Go to Sign Up" : "Go to Sign In"}
-            </p>
-          </div>
+  Logout
+</a>
+          <RefreshCw onClick={handleRefresh} size={20} color="black" className="cursor-pointer" />
         </div>
       </div>
 
-      {/* Infinite Typing Animation Style */}
- <style jsx>{`
- .typing-animation {
-    overflow: hidden;
-    white-space: nowrap;
-    display: inline-block;
-    animation: typing 2s steps(60, end) infinite alternate, blink 0.75s step-end infinite;
-  }
+      {/* Mobile/Tablet Header */}
+      <div className="lg:hidden flex justify-between items-center px-6 py-4 bg-white">
+        <AlignLeft onClick={handleSideMenuOpen} size={24} className="cursor-pointer" />
+        <p className="font-instrument text-xl">WeaveSynth</p>
+        <RefreshCw onClick={handleRefresh} size={20} className="cursor-pointer" />
+      </div>
 
-  @keyframes typing {
-    from {
-      width: 0;
-    }
-    to {
-      width: 100%;
-    }
-  }
+      {/* Sidebar for Mobile/Tablet */}
+      <div
+        ref={SideMenuRef}
+        className="fixed top-0 left-0 -translate-x-full w-2/3 max-w-xs h-screen bg-primary z-50 flex flex-col p-8 md:hidden"
+      >
+        <div className="flex w-full justify-end">
+          <X size={28} color="white" className="cursor-pointer" onClick={handleSideMenuClose} />
+        </div>
+        <div className="flex flex-grow flex-col space-y-24 items-center justify-center w-full">
+          {sidemenulinks.map(([label, path]) => (
+            <a key={label} className="font-instrument text-3xl text-white cursor-pointer hover:underline">
+              {label}
+            </a>
+          ))}
+          <a onClick={signOut} className="font-instrument text-3xl text-white cursor-pointer hover:underline">
+            Logout
+          </a>
+        </div>
+      </div>
 
-  @keyframes blink {
-    0%, 100% {
-      border-color: black;
-    }
-    50% {
-      border-color: transparent;
-    }
-  }
-
-  @media screen and (max-width: 1024px) {
-  .auth-container {
-    flex-direction: column;
-  }
-    
-  .left-half {
-    width: 100%;
-    height: 40vh;
-  }
-
-  .right-half {
-    width: 100%;
-    min-height: 60vh;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    padding: 2rem;
-  }
-
-  .left-half h1 {
-    font-size: 2.5rem;
-    text-align: center;
-  }
-
-  .left-half h2 {
-    font-size: 1.25rem;
-    text-align: center;
-    padding: 0 1rem;
-  }
-}
-
-@media screen and (max-width: 640px) {
-  .left-half {
-    height: 40vh;
-  }
-
-  .right-half {
-    background-color: transparent !important; /* Remove black bg */  
-    min-height: 75vh;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    padding: 1rem;
-   
-  }
-
-  .typing-animation {
-    display: none !important;
-  }
-
-  .left-half h1 {
-    font-size: 3rem;
-    line-height: 3.5rem;
-    margin-top:2rem;
-  }
-
-  .left-half h2 {
-  font-style: italic;
-    font-size: 1rem;
-    margin-bottom: 1rem;
-  }
-
-  .right-half > div {
-    width: 100%;
-    max-width: 360px;
-    background-color: black;
-    padding: 1.5rem;
-    border-radius: 8px;
-    
-  }
-}
-
-`}</style>
+      {/* Articles Section */}
+      <div className="px-6 py-6">
+        {lfArticles ? (
+          <div className="flex justify-center items-center min-h-[60vh]">
+            <p className="font-inter font-bold animate-pulse">Fetching New Articles! It will take time.</p>
+          </div>
+        ) : articles.length === 0 ? (
+          <div className="flex justify-center items-center min-h-[60vh]">
+            <p className="font-inter font-bold">OOPs! No Articles Found</p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+            {articles.map((article) => (
+              <ArticleCard key={article.title} article={article} />
+            ))}
+          </div>
+        )}
+      </div>
     </div>
   );
 }
