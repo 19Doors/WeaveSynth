@@ -8,9 +8,9 @@ from dotenv import load_dotenv
 import libsql_experimental as libsql
 # load_dotenv()
 
-query = "World News"
+query = "Trending News Articles"
 raw_urls=get_urls(query)
-number_of_urls=3
+number_of_urls=2
 
 url = os.getenv("DATABASE_URL")
 auth_token = os.getenv("DATABASE_AUTH_TOKEN")
