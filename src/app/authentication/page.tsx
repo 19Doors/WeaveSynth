@@ -2,9 +2,14 @@
 import { Loading, Navbar, NavbarNo } from "@/components/ui";
 import { authClient } from "@/lib/auth-client";
 import { router } from "better-auth/api";
+import { Inbox, LockOpen, User } from "lucide-react";
 import { redirect } from "next/dist/server/api-utils";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
+import { gsap } from "gsap";
+import { Flip } from "gsap/Flip";
+
+gsap.registerPlugin(Flip);
 
 export default function authentication() {
   const [name, setName] = useState("");
@@ -73,34 +78,45 @@ export default function authentication() {
           </div>
         )}
         {loading == false && (
-          <div>
-            <p className="font-inter text-primary text-2xl font-black">
-              Weave your personalized news tapestry
-            </p>
+          <div className="flex flex-col space-y-8">
             {error && error.length != 0 && (
               <p className="font-inter text-red-500 font-bold">{error}</p>
             )}
             {siu == true && (
               <div className="flex flex-col space-y-4 font-inter font-bold text-primary">
-                <div>
-                  <p className="font-light">Email</p>
+                <p className="font-inter text-primary text-3xl font-medium">
+                  Welcome Back! <br />
+                  Sign in to continue
+                </p>
+                <div className="relative w-full h-full flex flex-col justify-center">
                   <input
                     type="email"
-                    className="w-full border p-1 text-sm rounded"
+                    className="w-full border p-2 text-sm rounded bg-white focus:z-50"
                     onChange={(e) => {
-                      setEmail(e.target.value);
+                      setEmail((x) => e.target.value);
                     }}
                   />
+                  {email == "" && (
+                    <div className="ml-2 flex space-x-2 items-center justify-center absolute left-0 font-inter">
+                      <Inbox size={16} color="#2D2D34" strokeWidth={1} />
+                      <p className="text-xs font-normal">Email</p>
+                    </div>
+                  )}
                 </div>
-                <div>
-                  <p className="font-light">Password</p>
+                <div className="relative w-full h-full flex flex-col justify-center">
                   <input
                     type="password"
-                    className="w-full border p-1 text-sm rounded"
+                    className="w-full border p-2 text-sm rounded bg-white focus:z-50"
                     onChange={(e) => {
                       setPassword(e.target.value);
                     }}
                   />
+                  {password == "" && (
+                    <div className="ml-2 flex space-x-2 items-center justify-center absolute left-0 font-inter">
+                      <LockOpen size={16} color="#2D2D34" strokeWidth={1} />
+                      <p className="text-xs font-normal">Password</p>
+                    </div>
+                  )}
                 </div>
                 <div className="flex justify-between items-center">
                   <div
@@ -124,35 +140,55 @@ export default function authentication() {
             )}
             {siu == false && (
               <div className="flex flex-col space-y-4 font-inter font-bold text-primary">
-                <div>
-                  <p className="font-light">Name</p>
+                <p className="font-inter text-primary text-3xl font-medium">
+                  Create Account! <br />
+                  Join us today!
+                </p>
+                <div className="relative w-full h-full flex flex-col justify-center">
                   <input
                     type="text"
-                    className="w-full border p-1 text-sm rounded"
+                    className="w-full border p-2 text-sm rounded bg-white focus:z-50"
                     onChange={(e) => {
                       setName(e.target.value);
                     }}
                   />
+                  {name == "" && (
+                    <div className="ml-2 flex space-x-2 items-center justify-center absolute left-0 font-inter">
+                      <User size={16} color="#2D2D34" strokeWidth={1} />
+                      <p className="text-xs font-normal">Name</p>
+                    </div>
+                  )}
                 </div>
-                <div>
-                  <p className="font-light">Email</p>
+
+                <div className="relative w-full h-full flex flex-col justify-center">
                   <input
                     type="email"
-                    className="w-full border p-1 text-sm rounded"
+                    className="w-full border p-2 text-sm rounded bg-white focus:z-50"
                     onChange={(e) => {
-                      setEmail(e.target.value);
+                      setEmail((x) => e.target.value);
                     }}
                   />
+                  {email == "" && (
+                    <div className="ml-2 flex space-x-2 items-center justify-center absolute left-0 font-inter">
+                      <Inbox size={16} color="#2D2D34" strokeWidth={1} />
+                      <p className="text-xs font-normal">Email</p>
+                    </div>
+                  )}
                 </div>
-                <div>
-                  <p className="font-light">Password</p>
+                <div className="relative w-full h-full flex flex-col justify-center">
                   <input
                     type="password"
-                    className="w-full border p-1 text-sm rounded"
+                    className="w-full border p-2 text-sm rounded bg-white focus:z-50"
                     onChange={(e) => {
                       setPassword(e.target.value);
                     }}
                   />
+                  {password == "" && (
+                    <div className="ml-2 flex space-x-2 items-center justify-center absolute left-0 font-inter">
+                      <LockOpen size={16} color="#2D2D34" strokeWidth={1} />
+                      <p className="text-xs font-normal">Password</p>
+                    </div>
+                  )}
                 </div>
                 <div className="flex justify-between items-center">
                   <div
