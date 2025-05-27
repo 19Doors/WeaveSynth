@@ -233,11 +233,6 @@ export default function Authentication() {
 }
 
 `}</style>
-{loading && (
-  <div className="fixed inset-0 bg-white flex items-center justify-center z-50">
-    <Loading />
-  </div>
-)}
     </div>
   );
 }
