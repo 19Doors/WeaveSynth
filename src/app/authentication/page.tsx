@@ -71,7 +71,7 @@ export default function authentication() {
   return (
     <div className="flex flex-col px-8 p-4 h-screen">
       <NavbarNo />
-      <div className="flex flex-grow flex-col justify-center items-left h-screen space-y-4 md:mx-[30%]">
+      <div className="flex flex-grow flex-col justify-center items-left h-screen space-y-4 sm:mx-[25%]">
         {loading && (
           <div>
             <Loading />
@@ -118,23 +118,27 @@ export default function authentication() {
                     </div>
                   )}
                 </div>
-                <div className="flex justify-between items-center">
+                <div className="flex justify-between items-center flex-col">
                   <div
                     onClick={signIn}
-                    className="flex justify-center items-center bg-primary w-20 h-10 rounded cursor-pointer"
+                    className="flex justify-center items-center bg-primary w-full h-10 rounded cursor-pointer"
                   >
                     <p className="font-inter text-white font-bold text-sm">
                       Sign In
                     </p>
                   </div>
-                  <p
-                    className="font-inter underline cursor-pointer"
-                    onClick={() => {
-                      setSiu(false);
-                    }}
-                  >
-                    Go to Sign Up
-                  </p>
+                  <div className="w-full border border-2 my-2 rounded border-primary" />
+                  <div className="flex font-inter text-sm space-x-1">
+                    <p>Don't have an account?</p>
+                    <p
+                      className="font-inter font-normal text-sx hover:underline cursor-pointer italic"
+                      onClick={() => {
+                        setSiu(false);
+                      }}
+                    >
+                      sign up
+                    </p>
+                  </div>
                 </div>
               </div>
             )}
@@ -190,23 +194,27 @@ export default function authentication() {
                     </div>
                   )}
                 </div>
-                <div className="flex justify-between items-center">
+                <div className="flex justify-between items-center flex-col">
                   <div
                     onClick={signUp}
-                    className="flex justify-center items-center bg-primary w-20 h-10 rounded cursor-pointer"
+                    className="flex justify-center items-center bg-primary w-full h-10 rounded cursor-pointer"
                   >
                     <p className="font-inter text-white font-bold text-sm">
                       Sign Up
                     </p>
                   </div>
-                  <p
-                    className="font-inter underline cursor-pointer"
-                    onClick={() => {
-                      setSiu(true);
-                    }}
-                  >
-                    Go to Sign In
-                  </p>
+                  <div className="w-full border border-2 my-2 rounded border-primary" />
+                  <div className="flex font-inter text-sm space-x-1">
+                    <p>Already have an account?</p>
+                    <p
+                      className="font-inter font-normal text-sx hover:underline cursor-pointer italic"
+                      onClick={() => {
+                        setSiu(true);
+                      }}
+                    >
+                      sign in
+                    </p>
+                  </div>
                 </div>
               </div>
             )}
