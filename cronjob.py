@@ -24,8 +24,12 @@ r=""
 for i in range(1000):
     if number_of_urls==0:
         break
-
-    url=raw_urls[i]["link"]
+    
+    url=""
+    try:
+        url=raw_urls[i]["link"]
+    except:
+        continue
     # Check if url is already present in db
     articlesLen = len(conn.execute(f"select * from articles as a where a.url='{url}'").fetchall())
     if(articlesLen>0):
