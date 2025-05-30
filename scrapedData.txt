@@ -1,0 +1,22 @@
+```json
+[
+  {
+    "Title": "Students or spies? The young Chinese caught in Trump's crosshairs",
+    "URL": "https://www.bbc.com/news/articles/c1dezrrl3zo",
+    "Thumbnail URL": "https://ichef.bbci.co.uk/news/1024/branded_news/924d/live/a87b2140-3c74-11f0-b6e6-4ddb91039da1.png",
+    "Source Publisher": "BBC"
+  },
+  {
+    "Title": "Ukraine war briefing: Flood of North Korean arms to Russia, say US, Japan and others",
+    "URL": "https://www.theguardian.com/world/2025/may/30/ukraine-war-briefing-flood-of-north-korean-arms-to-russia-say-us-japan-and-others",
+    "Thumbnail URL": "https://i.guim.co.uk/img/media/975179d817bd1b53486206c3063f51fb6d96b42/0_96_2965_1655/master/2965.jpg?width=465&dpr=1&s=none&crop=none",
+    "Source Publisher": "The Guardian"
+  },
+  {
+    "Title": "White House Announces New DOGE Leaders After Elon Musk's Exit",
+    "URL": "https://www.ndtv.com/world-news/white-house-announces-new-doge-leaders-after-elon-musks-exit-8543820",
+    "Thumbnail URL": "https://c.ndtvimg.com/2024-11/f0qj53v_elon-musk-doge_625x300_15_November_24.jpg?im=FeatureCrop,algorithm=dnn,width=1200,height=738",
+    "Source Publisher": "NDTV"
+  }
+]
+```

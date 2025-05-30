@@ -6,11 +6,7 @@ from one import scrape
 import os
 from dotenv import load_dotenv
 import libsql_experimental as libsql
-# load_dotenv()
-
-query = "World news"
-raw_urls=get_urls(query)
-number_of_urls=3
+load_dotenv()
 
 url = os.getenv("DATABASE_URL")
 auth_token = os.getenv("DATABASE_AUTH_TOKEN")
@@ -20,37 +16,7 @@ conn.sync()
 print("CONNECTED")
 
 articles=[]
-r=""
-for i in range(1000):
-    if number_of_urls==0:
-        break
-    
-    url=""
-    try:
-        url=raw_urls[i]["link"]
-    except:
-        continue
-    # Check if url is already present in db
-    articlesLen = len(conn.execute(f"select * from articles as a where a.url='{url}'").fetchall())
-    if(articlesLen>0):
-        print("Already exists")
-        continue
-
-    number_of_urls-=1
-    print("# Creating Article :",url)
-    try:
-        thumbnail_url=raw_urls[i]["thumbnail"]
-    except:
-        thumbnail_url="USE any image url given from content"
-
-    try:
-        scraped_data=scrape(url,thumbnail_url)
-    except:
-        continue
-    r=r+scraped_data+"\n"
-
-print("="*30)
-print("Perplexity Results:")
+r = scrape("https://news.google.com/search?q=world%20news&hl=en-US&gl=US&ceid=US%3Aen")
 try:
     per_results = perplexity_results(r)
     articles=per_results

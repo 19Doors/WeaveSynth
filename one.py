@@ -11,6 +11,9 @@ from dotenv import load_dotenv
 import tiktoken
 import json
 from selenium_stealth import stealth  # Import Selenium Stealth
+from per import perplexity_results
+
+load_dotenv()
 
 enc = tiktoken.encoding_for_model("gpt-4")
 
@@ -28,9 +31,9 @@ def create_undetectable_chrome_driver():
     options.add_argument("--headless=new")
     options.add_argument("start-maximized")  # Maximize to avoid headless detection
     options.add_argument('--no-sandbox')
-    options.add_argument('--disable-gpu')
-    options.add_argument('--ignore-certificate-errors')
-    options.add_argument('--disable-extensions')
+    # options.add_argument('--disable-gpu')
+    # options.add_argument('--ignore-certificate-errors')
+    # options.add_argument('--disable-extensions')
     options.add_argument('--disable-dev-shm-usage')
     options.add_argument("user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36") #Setting a custom user agent[3][4]
 
@@ -50,21 +53,19 @@ def create_undetectable_chrome_driver():
 driver = create_undetectable_chrome_driver() # Create the driver
 
 prompt_str = f"""
-You are an expert news article extractor. You will be given the HTML content of a news webpage and its URL.
+You are an expert information extractor. You will be given the HTML content of a webpage and its URL.
 
 Your task is to extract the following information automatically:
-- source_url: The URL of the news article (this should be the same as the URL provided below).
+- source_url: The URL of the news article.
 - title: The main headline of the article.
 - source_publisher: The name of the news publisher (e.g., BBC News, Reuters). If unknown, return null.
-- body: The main textual content of the article, cleaned and free of navigation, ads, and boilerplate.
+- thumbnail_url: thumbnail url. If unknown, return ""
 
-Please output the extracted information strictly as a JSON object with the keys: source_url, title, source_publisher, and body.
+Please output the extracted information strictly as a JSON object with the keys: source_url, title, source_publisher, and thumbnail_url
 
 HTML Content:
 \"\"\"
 \"\"\"
-
-URL:
 
 Output JSON:
 """
@@ -104,15 +105,15 @@ def page_extract(url):
 
 
     text_splitter = RecursiveCharacterTextSplitter(
-                    chunk_size=420000,  # Characters per chunk (adjust based on typical paragraph/section size and LLM input preference)
-                    chunk_overlap=42000, # Overlap to maintain context
+                    chunk_size=500000,  # Characters per chunk (adjust based on typical paragraph/section size and LLM input preference)
+                    chunk_overlap=50000, # Overlap to maintain context
                     length_function=token_length,
                     )
     chunks=text_splitter.split_text(str(soup))
     print(len(chunks))
     return chunks
 
-def scrape(url, thumbnail_url):
+def scrape(url):
 
     llm = ChatGoogleGenerativeAI(
         model="gemini-2.0-flash",
@@ -123,31 +124,33 @@ def scrape(url, thumbnail_url):
         # other params...
     )
 
-    merged_chunks_result=""
     def process_chunk(i,chunk):
-          prompt = f"""
-                Given an HTML chunk, chunk number: {i} \n of a larger article, analyze it, don't give explanation, convert it into markdown format.
+        prompt_str = f"""
+            Act as a web content analyzer. I need you to extract article metadata from the provided content. 
 
+            **Task**: Extract the following fields for each article:
+            - **Title**: Main article headline (clean text, no HTML tags)
+            - **URL**: Full article link (must be a complete, valid URL and should not contain google news)
+            - **Thumbnail URL**: Primary image URL (preferably high resolution)
+            - **Source Publisher**: Publication name (e.g., "BBC News", "The Guardian")
 
-                Instructions:
-                1. Make sure you DO NOT ALTER/CHANGE/MAKE any text by your own.
-                2. Remove all Ads/Not relevant things like copyright or nav.
-                3. Remove anything other than the main article, remove all the side or extra articles and their data.
-                4. Don't give any html tags instead you can convert to headings or subheadings or any markdown tag.
+            **Requirements**:
+            - Skip any content that isn't a news article (ads, navigation, etc.)
+            - Ensure URLs are complete and functional
+            - For thumbnails, prioritize the main article image over logos or icons
+            - Standardize publisher names (remove "www." or ".com" suffixes)
+            - If any field is missing, mark it as "N/A"
+            - Give top 3
 
-                Chunk: {chunk}
-            """
-          result=llm.invoke(prompt)
-          return str(result.content)
+            **Output Format**: JSON array with consistent structure
 
-    def combine(file):
-        with open(file) as f:
-              content=f.read()
-              result=llm.invoke(f"""
-                Given jsons from multiple chunks, combine them into one, making sure to remove all advertisements, make sure body contains the whole article content(make sure you do not change text, you just combine them, same with title) and remove param "is_ad". Don't give any explanation, content: {content}
-                """)
-              with open("c.txt","w") as ff:
-                    ff.write(result.content)
+            **Content to analyze**:
+            {chunk}
+        \"\"\"
+        \"\"\"
+        """
+        result=llm.invoke(prompt_str)
+        return str(result.content)
 
     def reset(files):
           for i in files:
@@ -161,29 +164,15 @@ def scrape(url, thumbnail_url):
         print("No chunks to process, likely a page load failure.")
         return None
 
-    for index,chunk in enumerate(chunks):
-          print("Processing Chunk",index)
-          result=process_chunk(index,chunk)
-          merged_chunks_result+=result+"\n"
+    
+    # for index,chunk in enumerate(chunks):
+    #       print("Processing Chunk",index)
+    #       result=process_chunk(index,chunk)
+    #       merged_chunks_result+=result+"\n"
 
+    result = process_chunk(1,chunks[0])
+    with open("scrapedData.txt",'w') as f:
+        f.write(result)
+    print("Data Saved in scrapedData.txt")
     # print(merged_chunks_result)
-    result=llm.invoke(f"""
-        Given a webpage, scrape the following in json format
-        [
-            {{
-		"title": "str",
-		"summary" : "str",
-		"content" : "str in markdown, could contain images",
-		"thumbnail_url" : "{thumbnail_url}"
-		"url" : "{url}",
-		"source" : "str",
-		"keywords" : ["ABC"],
-		"category" : "str, options: general, business, sports, nature"
-            }}
-        ]
-
-        Don't give any explanation whatsoever
-        Markdown text: {merged_chunks_result}
-    """)
-
-    return result.content
+    return result
