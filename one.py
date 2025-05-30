@@ -1,3 +1,6 @@
+from typing import List, Optional
+import random
+from pydantic import BaseModel, Field
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
@@ -12,6 +15,16 @@ import tiktoken
 import json
 from selenium_stealth import stealth  # Import Selenium Stealth
 from per import perplexity_results
+
+# Define the data structure using Pydantic
+class ArticleMetadata(BaseModel):
+    title: str = Field(description="Main article headline (clean text, no HTML tags)")
+    url: str = Field(description="Full article link (must be a complete, valid URL)")
+    thumbnail_url: Optional[str] = Field(description="Primary image URL", default="")
+    source_publisher: Optional[str] = Field(description="Publication name", default="N/A")
+
+class ArticleList(BaseModel):
+    articles: List[ArticleMetadata] = Field(description="List of extracted articles")
 
 load_dotenv()
 
@@ -28,18 +41,47 @@ def token_length(text):
 
 def create_undetectable_chrome_driver():
     options = webdriver.ChromeOptions()
+    
+    # Enhanced anti-detection options
     options.add_argument("--headless=new")
-    options.add_argument("start-maximized")  # Maximize to avoid headless detection
-    options.add_argument('--no-sandbox')
-    # options.add_argument('--disable-gpu')
-    # options.add_argument('--ignore-certificate-errors')
-    # options.add_argument('--disable-extensions')
-    options.add_argument('--disable-dev-shm-usage')
-    options.add_argument("user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/125.0.0.0 Safari/537.36") #Setting a custom user agent[3][4]
+    options.add_argument("--no-sandbox")
+    options.add_argument("--disable-dev-shm-usage")
+    options.add_argument("--disable-blink-features=AutomationControlled")
+    options.add_experimental_option("excludeSwitches", ["enable-automation"])
+    options.add_experimental_option('useAutomationExtension', False)
+    
+    # Randomize window size
+    window_sizes = ["1920,1080", "1366,768", "1440,900", "1536,864"]
+    selected_size = random.choice(window_sizes)
+    options.add_argument(f"--window-size={selected_size}")
+    
+    # Rotate user agents
+    user_agents = [
+        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36",
+        "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
+        "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+    ]
+    options.add_argument(f"user-agent={random.choice(user_agents)}")
+    
+    # Additional stealth options
+    options.add_argument("--disable-extensions")
+    options.add_argument("--disable-plugins")
+    options.add_argument("--disable-images")  # Faster loading
+    options.add_argument("--disable-javascript")  # Optional: disable JS if not needed
+    options.add_argument("--no-first-run")
+    options.add_argument("--no-default-browser-check")
+    options.add_argument("--disable-default-apps")
+    
+    # Proxy rotation (optional - add your proxy list)
+    # options.add_argument("--proxy-server=http://your-proxy:port")
 
     driver = webdriver.Chrome(options=options)
-
-    # Apply Selenium Stealth settings
+    
+    # Execute script to remove webdriver property
+    driver.execute_script("Object.defineProperty(navigator, 'webdriver', {get: () => undefined})")
+    
+    # Apply Selenium Stealth settings with randomized parameters
     stealth(driver,
             languages=["en-US", "en"],
             vendor="Google Inc.",
@@ -48,6 +90,7 @@ def create_undetectable_chrome_driver():
             renderer="Intel Iris OpenGL Engine",
             fix_hairline=True,
             )
+    
     return driver
 
 driver = create_undetectable_chrome_driver() # Create the driver
@@ -124,6 +167,8 @@ def scrape(url):
         # other params...
     )
 
+    structured_llm = llm.with_structured_output(ArticleList)
+
     def process_chunk(i,chunk):
         prompt_str = f"""
             Act as a web content analyzer. I need you to extract article metadata from the provided content. 
@@ -149,8 +194,8 @@ def scrape(url):
         \"\"\"
         \"\"\"
         """
-        result=llm.invoke(prompt_str)
-        return str(result.content)
+        result=structured_llm.invoke(prompt_str)
+        return result
 
     def reset(files):
           for i in files:
@@ -171,8 +216,12 @@ def scrape(url):
     #       merged_chunks_result+=result+"\n"
 
     result = process_chunk(1,chunks[0])
-    with open("scrapedData.txt",'w') as f:
-        f.write(result)
-    print("Data Saved in scrapedData.txt")
+    result = result.model_dump()
+    print(result)
+    articles = result['articles']
+    with open("scrapedData.json",'w') as f:
+        f.write(json.dumps(articles,indent=2))
+    print("Data Saved in scrapedData.json")
     # print(merged_chunks_result)
-    return result
+    return articles
+
