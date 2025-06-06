@@ -1,226 +1,242 @@
 "use client";
-import { Loading, Navbar, NavbarNo } from "@/components/ui";
+import { Loading, NavbarNo } from "@/components/ui";
 import { authClient } from "@/lib/auth-client";
-import { router } from "better-auth/api";
-import { Inbox, LockOpen, User } from "lucide-react";
-import { redirect } from "next/dist/server/api-utils";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
-import { gsap } from "gsap";
-import { Flip } from "gsap/Flip";
+import { useState } from "react";
 
-gsap.registerPlugin(Flip);
-
-export default function authentication() {
+export default function Authentication() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [siu, setSiu] = useState(true);
-  const router = useRouter();
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
+  const router = useRouter();
   async function signUp() {
-    setLoading((e) => true);
-    const { data, error } = await authClient.signUp.email(
+    setLoading(true);
+    const { error } = await authClient.signUp.email(
+      { email, password, name, callbackURL: "/" },
       {
-        email,
-        password,
-        name,
-        callbackURL: "/",
-      },
-      {
-        onSuccess: (ctx) => {
-          setLoading((e) => false);
+        onSuccess: () => {
+          setLoading(false);
           router.push("/");
-          console.log("Success");
         },
         onError: (ctx) => {
-          setLoading((e) => false);
-          console.log(ctx);
+          setLoading(false);
           setError(ctx.error.code);
         },
-      },
+      }
     );
-    setLoading((e) => false);
   }
-  async function signIn() {
-    setLoading((e) => true);
-    const { data, error } = await authClient.signIn.email(
-      {
-        email,
-        password,
-        callbackURL: "/",
-      },
-      {
-        onSuccess: (ctx) => {
-          setLoading((e) => false);
-          router.push("/");
-          console.log("Success");
-        },
-        onError: (ctx) => {
-          setLoading((e) => false);
-          console.log(ctx);
-          setError(ctx.error.code);
-        },
-      },
-    );
-    setLoading((e) => false);
-  }
-  useEffect(() => {}, [siu]);
-  useEffect(() => {}, [loading]);
-  return (
-    <div className="flex flex-col px-8 p-4 h-screen">
-      <NavbarNo />
-      <div className="flex flex-grow flex-col justify-center items-left h-screen space-y-4 sm:mx-[25%] lg:mx-[35%]">
-        {loading && (
-          <div>
-            <Loading />
-          </div>
-        )}
-        {loading == false && (
-          <div className="flex flex-col space-y-8">
-            {error && error.length != 0 && (
-              <p className="font-inter text-red-500 font-bold">{error}</p>
-            )}
-            {siu == true && (
-              <div className="flex flex-col space-y-4 font-inter font-bold text-primary">
-                <p className="font-inter text-primary text-3xl font-medium">
-                  Welcome Back! <br />
-                  Sign in to continue
-                </p>
-                <div className="relative w-full h-full flex flex-col justify-center">
-                  <input
-                    type="email"
-                    className="w-full border p-2 text-sm rounded bg-white focus:z-50"
-                    onChange={(e) => {
-                      setEmail((x) => e.target.value);
-                    }}
-                  />
-                  {email == "" && (
-                    <div className="ml-2 flex space-x-2 items-center justify-center absolute left-0 font-inter">
-                      <Inbox size={16} color="#2D2D34" strokeWidth={1} />
-                      <p className="text-xs font-normal">Email</p>
-                    </div>
-                  )}
-                </div>
-                <div className="relative w-full h-full flex flex-col justify-center">
-                  <input
-                    type="password"
-                    className="w-full border p-2 text-sm rounded bg-white focus:z-50"
-                    onChange={(e) => {
-                      setPassword(e.target.value);
-                    }}
-                  />
-                  {password == "" && (
-                    <div className="ml-2 flex space-x-2 items-center justify-center absolute left-0 font-inter">
-                      <LockOpen size={16} color="#2D2D34" strokeWidth={1} />
-                      <p className="text-xs font-normal">Password</p>
-                    </div>
-                  )}
-                </div>
-                <div className="flex justify-between items-center flex-col">
-                  <div
-                    onClick={signIn}
-                    className="flex justify-center items-center bg-primary w-full h-10 rounded cursor-pointer"
-                  >
-                    <p className="font-inter text-white font-bold text-sm">
-                      Sign In
-                    </p>
-                  </div>
-                  <div className="w-full border border-2 my-2 rounded border-primary" />
-                  <div className="flex font-inter text-sm space-x-1">
-                    <p>Don't have an account?</p>
-                    <p
-                      className="font-inter font-normal text-sx hover:underline cursor-pointer italic"
-                      onClick={() => {
-                        setSiu(false);
-                      }}
-                    >
-                      sign up
-                    </p>
-                  </div>
-                </div>
-              </div>
-            )}
-            {siu == false && (
-              <div className="flex flex-col space-y-4 font-inter font-bold text-primary">
-                <p className="font-inter text-primary text-3xl font-medium">
-                  Create Account! <br />
-                  Join us today!
-                </p>
-                <div className="relative w-full h-full flex flex-col justify-center">
-                  <input
-                    type="text"
-                    className="w-full border p-2 text-sm rounded bg-white focus:z-50"
-                    onChange={(e) => {
-                      setName(e.target.value);
-                    }}
-                  />
-                  {name == "" && (
-                    <div className="ml-2 flex space-x-2 items-center justify-center absolute left-0 font-inter">
-                      <User size={16} color="#2D2D34" strokeWidth={1} />
-                      <p className="text-xs font-normal">Name</p>
-                    </div>
-                  )}
-                </div>
 
-                <div className="relative w-full h-full flex flex-col justify-center">
-                  <input
-                    type="email"
-                    className="w-full border p-2 text-sm rounded bg-white focus:z-50"
-                    onChange={(e) => {
-                      setEmail((x) => e.target.value);
-                    }}
-                  />
-                  {email == "" && (
-                    <div className="ml-2 flex space-x-2 items-center justify-center absolute left-0 font-inter">
-                      <Inbox size={16} color="#2D2D34" strokeWidth={1} />
-                      <p className="text-xs font-normal">Email</p>
-                    </div>
-                  )}
-                </div>
-                <div className="relative w-full h-full flex flex-col justify-center">
-                  <input
-                    type="password"
-                    className="w-full border p-2 text-sm rounded bg-white focus:z-50"
-                    onChange={(e) => {
-                      setPassword(e.target.value);
-                    }}
-                  />
-                  {password == "" && (
-                    <div className="ml-2 flex space-x-2 items-center justify-center absolute left-0 font-inter">
-                      <LockOpen size={16} color="#2D2D34" strokeWidth={1} />
-                      <p className="text-xs font-normal">Password</p>
-                    </div>
-                  )}
-                </div>
-                <div className="flex justify-between items-center flex-col">
-                  <div
-                    onClick={signUp}
-                    className="flex justify-center items-center bg-primary w-full h-10 rounded cursor-pointer"
-                  >
-                    <p className="font-inter text-white font-bold text-sm">
-                      Sign Up
-                    </p>
-                  </div>
-                  <div className="w-full border border-2 my-2 rounded border-primary" />
-                  <div className="flex font-inter text-sm space-x-1">
-                    <p>Already have an account?</p>
-                    <p
-                      className="font-inter font-normal text-sx hover:underline cursor-pointer italic"
-                      onClick={() => {
-                        setSiu(true);
-                      }}
-                    >
-                      sign in
-                    </p>
-                  </div>
-                </div>
-              </div>
-            )}
+  async function signIn() {
+    setLoading(true);
+    const { error } = await authClient.signIn.email(
+      { email, password, callbackURL: "/" },
+      {
+        onSuccess: () => {
+          setLoading(false);
+          router.push("/");
+        },
+        onError: (ctx) => {
+          setLoading(false);
+          setError(ctx.error.code);
+        },
+      }
+    );
+  }
+
+  return (
+    <div className="h-screen w-screen flex font-inter auth-container">
+
+      {/* Left Half - Typing Animation */}
+<div className="w-2/3 relative bg-white text-black overflow-hidden left-half">
+
+  <img
+    src="https://st.depositphotos.com/2046901/3389/i/950/depositphotos_33898493-stock-photo-newspaper-border.jpg"
+    alt="news background"
+    className="absolute top-0 left-0 w-full h-full z-0 opacity-80"
+  />
+  <div className="absolute inset-0 bg-white/80 z-10" />
+  <div className="relative z-20 h-full w-full flex flex-col justify-center items-center px-4 py-8 space-y-6">
+    <h1
+  className="text-6xl font-bold z-20"
+  style={{ fontFamily: "'Instrument Serif', 'serif'" }}
+>
+  Welcome to WeaveSynth
+</h1>
+  <h2 className="text-xl sm:text-2xl md:text-3xl font-black text-black text-center max-w-2xl">
+  <span className="hidden md:inline-block typing-animation border-r-4 pr-1 border-black">
+    Weave your personalized news tapestry
+  </span>
+  <span className="inline-block md:hidden">
+    Weave your personalized news tapestry
+  </span>
+</h2>
+
+  </div>
+</div>
+
+
+
+      {/* Right Half - Form */}
+      <div className="w-1/3 bg-black text-white flex flex-col justify-center px-10 right-half">
+
+        {/* <NavbarNo /> */}
+        <div className="max-w-md w-full space-y-6">
+          <h2 className="text-3xl font-bold text-white text-center">
+            {siu ? "Sign In" : "Create an Account"}
+          </h2>
+          {loading && <Loading />}
+          {error && <p className="text-red-500 font-bold text-sm">{error}</p>}
+          {!siu && (
+            <div>
+              <label className="block text-sm font-light">Name</label>
+              <input
+                type="text"
+                className="w-full p-2 rounded bg-white/10 border border-white/30 text-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
+                onChange={(e) => setName(e.target.value)}
+              />
+            </div>
+          )}
+          <div>
+            <label className="block text-sm font-light">Email</label>
+            <input
+              type="email"
+              className="w-full p-2 rounded bg-white/10 border border-white/30 text-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
+              onChange={(e) => setEmail(e.target.value)}
+            />
           </div>
-        )}
+          <div>
+            <label className="block text-sm font-light">Password</label>
+            <input
+              type="password"
+              className="w-full p-2 rounded bg-white/10 border border-white/30 text-white text-sm focus:outline-none focus:ring-2 focus:ring-blue-400"
+              onChange={(e) => setPassword(e.target.value)}
+            />
+          </div>
+          <div className="flex justify-between items-center mt-4">
+            <button
+              onClick={siu ? signIn : signUp}
+              className="w-28 h-10 rounded bg-white hover:bg-blue-900 transition text-sm text-black font-bold"
+            >
+              {siu ? "Sign In" : "Sign Up"}
+            </button>
+            <p
+              className="text-sm underline cursor-pointer hover:text-blue-400"
+              onClick={() => setSiu(!siu)}
+            >
+              {siu ? "Go to Sign Up" : "Go to Sign In"}
+            </p>
+          </div>
+        </div>
       </div>
+
+      {/* Infinite Typing Animation Style */}
+ <style jsx>{`
+ .typing-animation {
+    overflow: hidden;
+    white-space: nowrap;
+    display: inline-block;
+    animation: typing 2s steps(60, end) infinite alternate, blink 0.75s step-end infinite;
+  }
+
+  @keyframes typing {
+    from {
+      width: 0;
+    }
+    to {
+      width: 100%;
+    }
+  }
+
+  @keyframes blink {
+    0%, 100% {
+      border-color: black;
+    }
+    50% {
+      border-color: transparent;
+    }
+  }
+
+  @media screen and (max-width: 1024px) {
+  .auth-container {
+    flex-direction: column;
+  }
+    
+  .left-half {
+    width: 100%;
+    height: 40vh;
+  }
+
+  .right-half {
+    width: 100%;
+    min-height: 60vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 2rem;
+  }
+
+  .left-half h1 {
+    font-size: 2.5rem;
+    text-align: center;
+  }
+
+  .left-half h2 {
+    font-size: 1.25rem;
+    text-align: center;
+    padding: 0 1rem;
+  }
+}
+
+@media screen and (max-width: 640px) {
+  .left-half {
+    height: 40vh;
+  }
+
+  .right-half {
+    background-color: transparent !important; /* Remove black bg */  
+    min-height: 75vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 1rem;
+   
+  }
+
+  .typing-animation {
+    display: none !important;
+  }
+
+  .left-half h1 {
+    font-size: 3rem;
+    line-height: 3.5rem;
+    margin-top:2rem;
+  }
+
+  .left-half h2 {
+  font-style: italic;
+    font-size: 1rem;
+    margin-bottom: 1rem;
+  }
+
+  .right-half > div {
+    width: 100%;
+    max-width: 360px;
+    background-color: black;
+    padding: 1.5rem;
+    border-radius: 8px;
+    
+  }
+}
+
+`}</style>
+{loading && (
+  <div className="fixed inset-0 bg-white flex items-center justify-center z-50">
+    <Loading />
+  </div>
+)}
     </div>
   );
 }
