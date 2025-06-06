@@ -1,5 +1,7 @@
+from datetime import time
 from typing import List, Optional
 import random
+import time
 from pydantic import BaseModel, Field
 from selenium import webdriver
 from selenium.webdriver.common.by import By
@@ -42,47 +44,30 @@ def token_length(text):
 def create_undetectable_chrome_driver():
     options = webdriver.ChromeOptions()
     
-    # Enhanced anti-detection options
-    options.add_argument("--headless=new")
+    # More comprehensive stealth options
     options.add_argument("--no-sandbox")
     options.add_argument("--disable-dev-shm-usage")
     options.add_argument("--disable-blink-features=AutomationControlled")
+    options.add_argument("--disable-web-security")
+    options.add_argument("--allow-running-insecure-content")
     options.add_experimental_option("excludeSwitches", ["enable-automation"])
     options.add_experimental_option('useAutomationExtension', False)
     
-    # Randomize window size
-    window_sizes = ["1920,1080", "1366,768", "1440,900", "1536,864"]
-    selected_size = random.choice(window_sizes)
-    options.add_argument(f"--window-size={selected_size}")
-    
-    # Rotate user agents
+    # Randomize more attributes
     user_agents = [
-        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
-        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/119.0.0.0 Safari/537.36",
-        "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36",
-        "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36"
+        "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36",
+        "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36",
+        "Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/121.0.0.0 Safari/537.36"
     ]
-    options.add_argument(f"user-agent={random.choice(user_agents)}")
     
-    # Additional stealth options
-    options.add_argument("--disable-extensions")
-    options.add_argument("--disable-plugins")
-    options.add_argument("--disable-images")  # Faster loading
-    options.add_argument("--disable-javascript")  # Optional: disable JS if not needed
-    options.add_argument("--no-first-run")
-    options.add_argument("--no-default-browser-check")
-    options.add_argument("--disable-default-apps")
+    selected_ua = random.choice(user_agents)
+    options.add_argument(f"--user-agent={selected_ua}")
     
-    # Proxy rotation (optional - add your proxy list)
-    # options.add_argument("--proxy-server=http://your-proxy:port")
-
     driver = webdriver.Chrome(options=options)
     
-    # Execute script to remove webdriver property
-    driver.execute_script("Object.defineProperty(navigator, 'webdriver', {get: () => undefined})")
-    
-    # Apply Selenium Stealth settings with randomized parameters
+    # Enhanced stealth configuration
     stealth(driver,
+            user_agent=selected_ua,
             languages=["en-US", "en"],
             vendor="Google Inc.",
             platform="Win32",
@@ -90,6 +75,15 @@ def create_undetectable_chrome_driver():
             renderer="Intel Iris OpenGL Engine",
             fix_hairline=True,
             )
+    
+    # Additional JavaScript patches
+    driver.execute_script("""
+        Object.defineProperty(navigator, 'webdriver', {get: () => undefined});
+        Object.defineProperty(navigator, 'plugins', {get: () => [1, 2, 3, 4, 5]});
+        Object.defineProperty(navigator, 'languages', {get: () => ['en-US', 'en']});
+        window.chrome = {runtime: {}};
+        Object.defineProperty(navigator, 'permissions', {get: () => ({query: () => Promise.resolve({state: 'granted'})})});
+    """)
     
     return driver
 
@@ -115,13 +109,22 @@ Output JSON:
 
 def page_extract(url):
     print("# Fetching Page",url)
+    time.sleep(random.uniform(2,5))
     driver.get(url)
-
+    time.sleep(random.uniform(3, 7))
+    # Random scroll to simulate reading
+    driver.execute_script("window.scrollTo(0, document.body.scrollHeight/4);")
+    time.sleep(random.uniform(1, 3))
+    driver.execute_script("window.scrollTo(0, document.body.scrollHeight/2);")
+    time.sleep(random.uniform(1, 3))
+    driver.execute_script("window.scrollTo(0, 0);")
     # Wait for the page to load completely
     try:
-        WebDriverWait(driver, 10).until(
-            EC.presence_of_element_located((By.TAG_NAME, 'body'))  # Wait for the body tag
+        WebDriverWait(driver, 15).until(
+            EC.presence_of_element_located((By.TAG_NAME, 'body'))
         )
+        # Additional wait for dynamic content
+        time.sleep(random.uniform(2, 4))
     except:
         print("Page Load Timeout")
         return None

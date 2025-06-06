@@ -1,8 +1,7 @@
 import json
-from getURLs import get_urls
+from articles import getArticles
 from hashing import url_to_sha256_id
 from per import perplexity_results
-from one import scrape
 import os
 from dotenv import load_dotenv
 import libsql_experimental as libsql
@@ -15,12 +14,12 @@ conn = libsql.connect("weavesynth.db", sync_url=url, auth_token=auth_token)
 conn.sync()
 print("CONNECTED")
 
-articles=[]
-r = scrape("https://news.google.com/search?q=world%20news&hl=en-US&gl=US&ceid=US%3Aen")
+articles=getArticles("world")
+final_articles=[]
 number_of_urls=3
 i=0
-while i<len(r) and number_of_urls!=0:
-    url = r[i]['url']
+while i<len(articles) and number_of_urls!=0:
+    url = articles[i]['url']
     i+=1
     articlesLen = len(conn.execute(f"select * from articles as a where a.url='{url}'").fetchall())
     if(articlesLen>0):
@@ -28,13 +27,13 @@ while i<len(r) and number_of_urls!=0:
         continue
 
     number_of_urls-=1
-    articles.extend(r[i-1])
+    thisarticle = {"title":articles[i-1]['title'],"url":articles[i-1]['url'],"thumbnail_url":articles[i-1]['image'],"source":articles[i-1]['source']}
+    final_articles.append(thisarticle)
 
-if(len(articles)!=0):
+if(len(final_articles)!=0):
     try:
-        per_results = perplexity_results(articles)
+        per_results = perplexity_results(final_articles)
         articles=per_results
-        # print(result)
     except json.JSONDecodeError as e:
         print(f"JSONDecodeError: {e}")
 

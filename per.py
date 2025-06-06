@@ -26,7 +26,7 @@ class ArticleListResponse(BaseModel):
 # load_dotenv()
 perplexity_api=os.getenv("PERPLEXITY_API")
 model="sonar-pro"
-search_context_size="low"
+search_context_size="medium"
 search_domain_filter=["https://edition.cnn.com/","https://www.bbc.com/","https://www.nytimes.com/","https://www.washingtonpost.com/","https://indianexpress.com/","https://timesofindia.indiatimes.com/","https://www.hindustantimes.com/","https://www.ndtv.com/","https://www.indiatoday.in/","https://www.thehindu.com/"]
 system_prompt=""
 with open("system_prompt.txt") as f:
@@ -58,9 +58,9 @@ def perplexity_results(content):
     "title": "Engaging, professional headline"(str),
     "summary": "Compelling 2-3 sentence summary that draws readers in"(str),
     "content": "Comprehensive markdown content with proper formatting, headings, and structure. Include relevant details, context, and analysis while maintaining journalistic integrity."(str),
-    "thumbnail_url": "original_url_or_null"(str), Original thumbnail url
-    "url": "original_source_url"(str). It should be the original url
-    "source": "original_source_name"(str). Original Source
+    "thumbnail_url": "original_url_or_null"(str), Original thumbnail url from the original articles provided below
+    "url": "original_source_url"(str). It should be the original url from the original articles provided below
+    "source": "original_source_name"(str). Original Source from the original articles provided below
     "keywords": ["relevant", "keywords", "for", "SEO"](["ABC"]),
     "category": "general|business|sports|nature|technology|politics|health|entertainment"(str)
     }}]
