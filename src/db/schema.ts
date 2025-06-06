@@ -1,3 +1,4 @@
+import { sql } from "drizzle-orm";
 import { sqliteTable, text, integer } from "drizzle-orm/sqlite-core";
 
 export const user = sqliteTable("user", {
@@ -55,6 +56,7 @@ export const articles = sqliteTable("articles", {
   thumbnail_url: text('thumbnail_url'),
   source: text('source'),
   keywords: text('keywords'),
-  category: text('category')
+  category: text('category'),
+  publishedDT: text('publishedDT').notNull().default(sql`(current_timestamp)`)
 })
 

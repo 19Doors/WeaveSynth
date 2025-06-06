@@ -1,7 +1,7 @@
 {
   "version": "6",
   "dialect": "sqlite",
-  "id": "788bb4c1-b654-45ec-b00e-c6ace8052697",
+  "id": "4970fc85-ad90-4852-a6d0-51c3dd14c879",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "tables": {
     "account": {
@@ -184,6 +184,14 @@
           "primaryKey": false,
           "notNull": false,
           "autoincrement": false
+        },
+        "publishedDT": {
+          "name": "publishedDT",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true,
+          "autoincrement": false,
+          "default": "(current_timestamp)"
         }
       },
       "indexes": {},

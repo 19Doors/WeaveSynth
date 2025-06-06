@@ -176,7 +176,9 @@ export default function Home() {
           </div>
         ) : articles.length === 0 ? (
           <div className="flex justify-center items-center min-h-[60vh]">
-            <p className="font-inter font-bold">OOPs! No Articles Found</p>
+            <p className="font-inter font-bold animate-pulse">
+              Fetching New Articles! It will take time.
+            </p>
           </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
