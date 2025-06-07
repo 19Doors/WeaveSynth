@@ -2,6 +2,33 @@ import { Navbar, NavbarNo } from "@/components/ui";
 import { fetchArticleById } from "@/lib/articles";
 import Markdown from "react-markdown";
 
+function convertUTCToLocalDateTime(utcTimestamp: string): string {
+  // Parse the UTC timestamp
+  const utcDate = new Date(utcTimestamp);
+  
+  // Convert to local time
+  const localDate = new Date(utcDate.getTime());
+  
+  // Extract components
+  const day = localDate.getDate();
+  const monthNames = [
+    'January', 'February', 'March', 'April', 'May', 'June',
+    'July', 'August', 'September', 'October', 'November', 'December'
+  ];
+  const monthName = monthNames[localDate.getMonth()];
+  const year = localDate.getFullYear();
+  
+  // Format time (12-hour format with AM/PM)
+  const hours = localDate.getHours();
+  const minutes = localDate.getMinutes().toString().padStart(2, '0');
+  const seconds = localDate.getSeconds().toString().padStart(2, '0');
+  const ampm = hours >= 12 ? 'PM' : 'AM';
+  const displayHours = hours % 12 || 12;
+  
+  const localTime = `${displayHours}:${minutes}:${seconds} ${ampm}`;
+  
+  return `${day} ${monthName} ${year}, ${localTime}`;
+}
 export default async function ArticlePage({
   params,
 }: {
@@ -64,6 +91,7 @@ export default async function ArticlePage({
         >
           {article.content}
         </Markdown>
+	<p className="font-inter text-xs font-bold text-center">{convertUTCToLocalDateTime(article.publishedDT)}</p>
       </div>
     </div>
   );
