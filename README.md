@@ -23,52 +23,54 @@ WeaveSynth is packed with features designed to provide a seamless and insightful
 *   **🗄️ Robust Database Schema:** Built with `Drizzle ORM` and `Turso DB`, ensuring efficient storage and retrieval of user data and article information.
 
 ## 📂 Project Structure
+
+```
 .
 └── 19doors-weavesynth/
-├── README.md
-├── drizzle.config.ts # Drizzle ORM configuration for database migrations
-├── next.config.ts # Next.js specific configurations
-├── package.json # Project dependencies and scripts
-├── postcss.config.mjs # PostCSS configuration, includes TailwindCSS
-├── tsconfig.json # TypeScript compiler settings
-├── drizzle/ # Drizzle ORM migration files and snapshots
-│ ├── 0000_flimsy_ogun.sql
-│ └── meta/
-│ ├── 0000_snapshot.json
-│ └── _journal.json
-└── src/
-├── index.ts # Drizzle ORM database client initialization
-├── middleware.ts # Next.js middleware for authentication protection
-├── app/ # Next.js App Router structure
-│ ├── globals.css # Global styles and font imports
-│ ├── layout.tsx # Root layout for the application
-│ ├── loading.tsx # Global loading component
-│ ├── page.tsx # Home page displaying global news
-│ ├── api/ # API routes
-│ │ └── auth/
-│ │ └── [...all]/
-│ │ └── route.ts # Authentication API endpoint
-│ ├── articles/ # Dynamic article pages
-│ │ └── [articleId]/
-│ │ ├── loading.tsx
-│ │ └── page.tsx
-│ ├── authentication/ # User authentication (Sign In/Sign Up) page
-│ │ └── page.tsx
-│ ├── loadingg/ # Additional loading component (can be consolidated)
-│ │ └── page.tsx
-│ ├── nature/ # Nature news category page
-│ │ └── page.tsx
-│ └── sports/ # Sports news category page
-│ └── page.tsx
-├── components/ # Reusable UI components
-│ └── ui.tsx
-├── db/ # Database schema definitions
-│ └── schema.ts
-└── lib/ # Utility functions and external integrations
-├── articles.tsx # Server actions for fetching news articles
-├── auth-client.ts # Better Auth client-side initialization
-└── auth.ts # Better Auth server-side configuration
-
+    ├── README.md
+    ├── drizzle.config.ts         # Drizzle ORM configuration for database migrations
+    ├── next.config.ts            # Next.js specific configurations
+    ├── package.json              # Project dependencies and scripts
+    ├── postcss.config.mjs        # PostCSS configuration, includes TailwindCSS
+    ├── tsconfig.json             # TypeScript compiler settings
+    ├── drizzle/                  # Drizzle ORM migration files and snapshots
+    │   ├── 0000_flimsy_ogun.sql
+    │   └── meta/
+    │       ├── 0000_snapshot.json
+    │       └── _journal.json
+    └── src/
+        ├── index.ts              # Drizzle ORM database client initialization
+        ├── middleware.ts         # Next.js middleware for authentication protection
+        ├── app/                  # Next.js App Router structure
+        │   ├── globals.css       # Global styles and font imports
+        │   ├── layout.tsx        # Root layout for the application
+        │   ├── loading.tsx       # Global loading component
+        │   ├── page.tsx          # Home page displaying global news
+        │   ├── api/              # API routes
+        │   │   └── auth/
+        │   │       └── [...all]/
+        │   │           └── route.ts # Authentication API endpoint
+        │   ├── articles/         # Dynamic article pages
+        │   │   └── [articleId]/
+        │   │       ├── loading.tsx
+        │   │       └── page.tsx
+        │   ├── authentication/   # User authentication (Sign In/Sign Up) page
+        │   │   └── page.tsx
+        │   ├── loadingg/         # Additional loading component (can be consolidated)
+        │   │   └── page.tsx
+        │   ├── nature/           # Nature news category page
+        │   │   └── page.tsx
+        │   └── sports/           # Sports news category page
+        │       └── page.tsx
+        ├── components/           # Reusable UI components
+        │   └── ui.tsx
+        ├── db/                   # Database schema definitions
+        │   └── schema.ts
+        └── lib/                  # Utility functions and external integrations
+            ├── articles.tsx      # Server actions for fetching news articles
+            ├── auth-client.ts    # Better Auth client-side initialization
+            └── auth.ts           # Better Auth server-side configuration
+```
 
 ## 🛠️ Technologies Used
 
@@ -133,6 +135,6 @@ bun dev
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result. The page auto-updates as you edit the files.
 
----
 
 Made with ❤️ during the Perplexity Hackathon.
+```
